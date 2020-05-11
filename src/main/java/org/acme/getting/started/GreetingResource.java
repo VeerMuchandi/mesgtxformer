@@ -1,7 +1,9 @@
 package org.acme.getting.started;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -32,30 +34,42 @@ public class GreetingResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("message")
     public String hello(){
-        return hello(defaultMessage);
+        return getMessage(defaultMessage);
     }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("message/{message}")
-    public String hello(@PathParam String message) {
-        
+    public String getMessage(@PathParam String message) {  
+        return transform(message);
+    }
 
-        switch(deployment) 
+    @POST
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Path("message")
+    public void postMessage(String message) {  
+         transform(message);
+    }
+
+    private String transform(String message) {
+        String outMessage=message;
+        
+		switch(deployment) 
         { 
             case "wordcount": 
-                message=this.wordCount(message); 
+                outMessage=this.wordCount(message); 
                 break; 
             case "titlecase": 
-                message=this.titleCase(message);
+                outMessage=this.titleCase(message);
                 break; 
             case "capitalize": 
-                message=this.capitalize(message);
+                outMessage=this.capitalize(message);
                 break; 
             default: 
                 break; 
         } 
-        return message;
+        System.out.println(java.time.LocalTime.now() + "IN "+ message + " OUT "+outMessage);
+        return outMessage;
     }
 
     @GET
