@@ -32,21 +32,21 @@ public class GreetingResource {
     
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("message")
+    @Path("")
     public String hello(){
         return getMessage(defaultMessage);
     }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("message/{message}")
+    @Path("{message}")
     public String getMessage(@PathParam String message) {  
         return transform(message);
     }
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    @Path("message")
+    @Path("")
     public void postMessage(String message) {  
          transform(message);
     }
@@ -72,23 +72,17 @@ public class GreetingResource {
         return outMessage;
     }
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("wordcount/{sentence}")
+
     public String wordCount(@PathParam final String sentence) {
         return "MESSAGE WORD COUNT: "+ service.countWords(sentence) + " SENTENCE: \""+sentence+"\"";
     }
     
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("titlecase/{sentence}")
+
     public String titleCase(@PathParam final String sentence) {
         return "MESSAGE TITLE CASED : \""+service.upperCaseAllFirst(sentence)+"\"";
     }
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("capitalize/{sentence}")
+ 
     public String capitalize(@PathParam final String sentence) {
         return "MESSAGE CAPITALIZED : \""+sentence.toUpperCase()+"\"";
     }
