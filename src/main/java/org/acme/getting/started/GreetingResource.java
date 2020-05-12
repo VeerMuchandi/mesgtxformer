@@ -45,7 +45,7 @@ public class GreetingResource {
     }
 
     @POST
-    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, MediaType.WILDCARD})
     @Path("")
     public void postMessage(String message) {  
          transform(message);
