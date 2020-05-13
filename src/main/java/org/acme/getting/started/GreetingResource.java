@@ -14,13 +14,25 @@ import org.jboss.resteasy.annotations.jaxrs.PathParam;
 @Path("/")
 public class GreetingResource {
 
+        public static final String ANSI_RESET = "\u001B[0m";
+        public static final String ANSI_BLACK = "\u001B[30m";
+        public static final String ANSI_RED = "\u001B[31m";
+        public static final String ANSI_GREEN = "\u001B[32m";
+        public static final String ANSI_YELLOW = "\u001B[33m";
+        public static final String ANSI_BLUE = "\u001B[34m";
+        public static final String ANSI_PURPLE = "\u001B[35m";
+        public static final String ANSI_CYAN = "\u001B[36m";
+        public static final String ANSI_WHITE = "\u001B[37m";
+
     @Inject
     GreetingService service;
 
-    @ConfigProperty(name = "deployment")
-    String deployment;
+    @ConfigProperty(name = "format")
+    String format;
     @ConfigProperty(name = "message")
     String defaultMessage;
+    @ConfigProperty(name = "color")
+    String color;
     
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -54,7 +66,7 @@ public class GreetingResource {
     private String transform(String message) {
         String outMessage=message;
         
-		switch(deployment) 
+		switch(format) 
         { 
             case "wordcount": 
                 outMessage=this.wordCount(message); 
@@ -68,8 +80,24 @@ public class GreetingResource {
             default: 
                 break; 
         } 
-        System.out.println(java.time.LocalTime.now() + "IN "+ message + " OUT "+outMessage);
-        return outMessage;
+        System.out.println(java.time.LocalTime.now() + " IN "+ message + " OUT "+outMessage);
+        return colorCode(outMessage);
+    }
+
+    //For BlueGreen Testing
+    private String colorCode(String message) {
+        switch (color)
+        {
+            case "blue":
+                message=ANSI_BLUE+message+ANSI_RESET;
+                break;
+            case "green":
+                message=ANSI_GREEN+message+ANSI_RESET;
+                break;
+            default:
+                break;
+        }
+        return message;
     }
 
 
