@@ -1,0 +1,117 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app: msgtxr
+  name: msgtxr 
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: msgtxr 
+    app.openshift.io/runtime: quarkus
+  name: msgtxr 
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: msgtxr 
+    deploymentconfig: msgtxr 
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: msgtxr 
+        deploymentconfig: msgtxr 
+    spec:
+      containers:
+      - image: msgtxr:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: msgtxr 
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP
+        - containerPort: 8778
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+  - imageChangeParams:
+      containerNames:
+      - msgtxr  
+      from:
+        kind: ImageStreamTag
+        name: msgtxr:latest
+    type: ImageChange
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: msgtxr 
+  name: msgtxr 
+spec:
+  ports:
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: msgtxr 
+    deploymentconfig: msgtxr 
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: msgtxr  
+  name: msgtxr
+spec:
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: msgtxr 
+    weight: 100
